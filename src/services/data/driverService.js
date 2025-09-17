@@ -203,32 +203,18 @@ export const deleteDriver = async (driverId) => {
     }
     
     // Delete Firebase Auth user if firebaseUid exists
-    if (driverData.firebaseUid) {
+    if (driverData.firebaseUid || driverData.uid) {
       try {
-        // In a client-side app, we can't directly delete other users from Firebase Auth
-        // This would require Firebase Admin SDK or a Cloud Function
-        // For now, we'll create a cloud callable function or use Admin SDK
+        const auth = getAuth();
+        const uid = driverData.firebaseUid || driverData.uid;
         
-        // Temporary solution: Use fetch to call a cloud function or API endpoint
-        console.log(`Need to delete Firebase Auth user: ${driverData.firebaseUid}`);
-        
-        // If you have a cloud function set up, uncomment this:
-        /*
-        const response = await fetch('/api/deleteUser', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ uid: driverData.firebaseUid })
-        });
-        if (response.ok) {
-          console.log(`Deleted Firebase Auth user: ${driverData.firebaseUid}`);
-        }
-        */
-        
-        // For demo purposes, we'll skip auth deletion
-        console.warn(`Firebase Auth user ${driverData.firebaseUid} should be deleted via Admin SDK`);
+        // Use deleteUser function from Firebase Auth Admin
+        await deleteAuthUser(uid);
+        console.log(`Deleted Firebase Auth user: ${uid}`);
         
       } catch (error) {
         console.warn('Could not delete Firebase Auth user:', error);
+        // Continue with deletion even if auth user deletion fails
       }
     }
     

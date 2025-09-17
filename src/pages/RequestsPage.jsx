@@ -1115,7 +1115,6 @@ const RequestsPage = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{getCustomerName(dispatch.customerId)}</div>
-                      <div className="text-sm text-gray-500">{dispatch.customerId}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900 max-w-xs">
@@ -1537,7 +1536,6 @@ const RequestsPage = () => {
                   const customer = getCustomerDetails(selectedDispatch.customerId);
                   return (
                     <div className="space-y-2 text-sm">
-                      <p><strong>Customer ID:</strong> {selectedDispatch.customerId}</p>
                       <p><strong>Name:</strong> {customer.name}</p>
                       <p><strong>Email:</strong> {customer.email}</p>
                       <p><strong>Phone:</strong> {customer.phone}</p>

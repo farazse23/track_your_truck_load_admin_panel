@@ -7,6 +7,300 @@ admin.initializeApp();
 const db = admin.firestore();
 
 /**
+ * Cloud Function: Send Push Notification to Driver
+ * Triggered when a notification is added to a driver's notifications subcollection
+ */
+exports.sendDriverPushNotification = functions.firestore
+  .document('drivers/{driverId}/notifications/{notificationId}')
+  .onCreate(async (snap, context) => {
+    try {
+      const { driverId, notificationId } = context.params;
+      const notificationData = snap.data();
+      
+      console.log(`📱 New notification for driver ${driverId}:`, notificationData);
+      
+      // Get driver document to retrieve FCM token
+      const driverDoc = await db.collection('drivers').doc(driverId).get();
+      
+      if (!driverDoc.exists) {
+        console.log(`❌ Driver ${driverId} not found`);
+        return;
+      }
+      
+      const driverData = driverDoc.data();
+      const fcmToken = driverData.fcmToken;
+      
+      if (!fcmToken) {
+        console.log(`❌ No FCM token found for driver ${driverId}`);
+        return;
+      }
+      
+      // Prepare push notification message
+      const message = {
+        token: fcmToken,
+        notification: {
+          title: notificationData.title || 'Captain Truck',
+          body: notificationData.message || 'You have a new notification',
+        },
+        data: {
+          type: notificationData.type || 'general',
+          notificationId: notificationId,
+          driverId: driverId,
+          timestamp: (notificationData.timestamp || new Date()).toString(),
+          priority: notificationData.priority || 'normal'
+        },
+        android: {
+          notification: {
+            icon: 'ic_notification',
+            color: '#2563eb',
+            sound: 'default',
+            priority: notificationData.priority === 'high' ? 'high' : 'normal'
+          }
+        },
+        apns: {
+          payload: {
+            aps: {
+              sound: 'default',
+              badge: 1,
+              'content-available': 1
+            }
+          }
+        }
+      };
+      
+      // Send push notification
+      const response = await admin.messaging().send(message);
+      console.log(`✅ Push notification sent successfully to driver ${driverId}:`, response);
+      
+      // Update notification document to mark as pushed
+      await snap.ref.update({
+        pushNotificationSent: true,
+        pushNotificationSentAt: admin.firestore.FieldValue.serverTimestamp(),
+        fcmResponse: response
+      });
+      
+    } catch (error) {
+      console.error(`❌ Error sending push notification to driver:`, error);
+      
+      // Update notification document to mark push as failed
+      await snap.ref.update({
+        pushNotificationSent: false,
+        pushNotificationError: error.message,
+        pushNotificationFailedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+  });
+
+/**
+ * Cloud Function: Send Push Notification to Customer
+ * Triggered when a notification is added to a customer's notifications subcollection
+ */
+exports.sendCustomerPushNotification = functions.firestore
+  .document('customers/{customerId}/notifications/{notificationId}')
+  .onCreate(async (snap, context) => {
+    try {
+      const { customerId, notificationId } = context.params;
+      const notificationData = snap.data();
+      
+      console.log(`📱 New notification for customer ${customerId}:`, notificationData);
+      
+      // Get customer document to retrieve FCM token
+      const customerDoc = await db.collection('customers').doc(customerId).get();
+      
+      if (!customerDoc.exists) {
+        console.log(`❌ Customer ${customerId} not found`);
+        return;
+      }
+      
+      const customerData = customerDoc.data();
+      const fcmToken = customerData.fcmToken;
+      
+      if (!fcmToken) {
+        console.log(`❌ No FCM token found for customer ${customerId}`);
+        return;
+      }
+      
+      // Prepare push notification message
+      const message = {
+        token: fcmToken,
+        notification: {
+          title: notificationData.title || 'Captain Truck',
+          body: notificationData.message || 'You have a new notification',
+        },
+        data: {
+          type: notificationData.type || 'general',
+          notificationId: notificationId,
+          customerId: customerId,
+          timestamp: (notificationData.timestamp || new Date()).toString(),
+          priority: notificationData.priority || 'normal'
+        },
+        android: {
+          notification: {
+            icon: 'ic_notification',
+            color: '#2563eb',
+            sound: 'default',
+            priority: notificationData.priority === 'high' ? 'high' : 'normal'
+          }
+        },
+        apns: {
+          payload: {
+            aps: {
+              sound: 'default',
+              badge: 1,
+              'content-available': 1
+            }
+          }
+        }
+      };
+      
+      // Send push notification
+      const response = await admin.messaging().send(message);
+      console.log(`✅ Push notification sent successfully to customer ${customerId}:`, response);
+      
+      // Update notification document to mark as pushed
+      await snap.ref.update({
+        pushNotificationSent: true,
+        pushNotificationSentAt: admin.firestore.FieldValue.serverTimestamp(),
+        fcmResponse: response
+      });
+      
+    } catch (error) {
+      console.error(`❌ Error sending push notification to customer:`, error);
+      
+      // Update notification document to mark push as failed
+      await snap.ref.update({
+        pushNotificationSent: false,
+        pushNotificationError: error.message,
+        pushNotificationFailedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+  });
+
+/**
+ * Cloud Function: Bulk Send Push Notifications
+ * HTTP callable function for sending notifications to multiple recipients
+ */
+exports.sendBulkPushNotifications = functions.https.onCall(async (data, context) => {
+  try {
+    // Verify authentication
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
+    }
+    
+    const { recipients, notification } = data;
+    
+    if (!recipients || !Array.isArray(recipients) || recipients.length === 0) {
+      throw new functions.https.HttpsError('invalid-argument', 'Recipients array is required');
+    }
+    
+    if (!notification || !notification.title || !notification.message) {
+      throw new functions.https.HttpsError('invalid-argument', 'Notification title and message are required');
+    }
+    
+    console.log(`📱 Sending bulk notifications to ${recipients.length} recipients`);
+    
+    const results = [];
+    
+    for (const recipient of recipients) {
+      try {
+        const { type, id, fcmToken } = recipient;
+        
+        if (!fcmToken) {
+          results.push({ id, success: false, error: 'No FCM token' });
+          continue;
+        }
+        
+        const message = {
+          token: fcmToken,
+          notification: {
+            title: notification.title,
+            body: notification.message,
+          },
+          data: {
+            type: notification.type || 'general',
+            recipientType: type,
+            recipientId: id,
+            timestamp: new Date().toString(),
+            priority: notification.priority || 'normal'
+          },
+          android: {
+            notification: {
+              icon: 'ic_notification',
+              color: '#2563eb',
+              sound: 'default',
+              priority: notification.priority === 'high' ? 'high' : 'normal'
+            }
+          },
+          apns: {
+            payload: {
+              aps: {
+                sound: 'default',
+                badge: 1,
+                'content-available': 1
+              }
+            }
+          }
+        };
+        
+        const response = await admin.messaging().send(message);
+        results.push({ id, success: true, response });
+        
+      } catch (error) {
+        console.error(`Error sending notification to ${recipient.id}:`, error);
+        results.push({ id: recipient.id, success: false, error: error.message });
+      }
+    }
+    
+    console.log(`✅ Bulk notification sending completed. Results:`, results);
+    
+    return {
+      success: true,
+      totalSent: results.filter(r => r.success).length,
+      totalFailed: results.filter(r => !r.success).length,
+      results
+    };
+    
+  } catch (error) {
+    console.error('Error in bulk push notifications:', error);
+    throw error;
+  }
+});
+
+/**
+ * Cloud Function: Update FCM Token
+ * HTTP callable function for updating user FCM tokens
+ */
+exports.updateFCMToken = functions.https.onCall(async (data, context) => {
+  try {
+    // Verify authentication
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
+    }
+    
+    const { userType, userId, fcmToken } = data;
+    
+    if (!userType || !userId || !fcmToken) {
+      throw new functions.https.HttpsError('invalid-argument', 'userType, userId, and fcmToken are required');
+    }
+    
+    const collection = userType === 'driver' ? 'drivers' : 'customers';
+    
+    await db.collection(collection).doc(userId).update({
+      fcmToken: fcmToken,
+      fcmTokenUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+    
+    console.log(`✅ FCM token updated for ${userType} ${userId}`);
+    
+    return { success: true, message: 'FCM token updated successfully' };
+    
+  } catch (error) {
+    console.error('Error updating FCM token:', error);
+    throw error;
+  }
+});
+
+/**
  * Cloud Function: Automatically update dispatch status when driver assignments change
  * Triggers: When any document in 'dispatches' collection is updated
  */

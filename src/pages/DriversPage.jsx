@@ -517,9 +517,6 @@ const DriversPage = () => {
                   Driver
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Driver ID
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Contact
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -554,11 +551,6 @@ const DriversPage = () => {
                           <div className="text-sm font-medium text-gray-900">{driver.name}</div>
                           <div className="text-sm text-gray-500">{driver.email}</div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-mono font-medium text-blue-600">
-                        {driver.driverId || driver.id}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -1055,24 +1047,6 @@ const DriversPage = () => {
                 <div className="text-left space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <strong>Driver ID:</strong> 
-                      <span className="ml-2 font-mono text-sm bg-white px-3 py-2 rounded border">
-                        {newDriverId}
-                      </span>
-                    </div>
-                    <div className="flex space-x-2">
-                      <button 
-                        onClick={() => copyToClipboard(newDriverId)}
-                        className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center"
-                        title="Copy Driver ID"
-                      >
-                        <FontAwesomeIcon icon={['fas', 'copy']} className="mr-1" />
-                        Copy
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
                       <strong>Email:</strong> 
                       <span className="ml-2 font-mono text-sm bg-white px-3 py-2 rounded border">
                         {newDriverEmail}
@@ -1158,7 +1132,6 @@ Dear Driver,
 Welcome to Captain Truck! Your driver account has been created.
 
 Login Details:
-Driver ID: ${newDriverId}
 Email: ${newDriverEmail}
 Temporary Password: ${generatedPassword}
 
@@ -1176,7 +1149,7 @@ Captain Truck Admin Team`;
                 </button>
                 <button
                   onClick={() => {
-                    const credentials = `Driver ID: ${newDriverId}\nEmail: ${newDriverEmail}\nPassword: ${generatedPassword}`;
+                    const credentials = `Email: ${newDriverEmail}\nPassword: ${generatedPassword}`;
                     copyToClipboard(credentials);
                     alert('Credentials copied to clipboard!');
                   }}

@@ -4,6 +4,7 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Badge from '../components/ui/Badge';
+import ProfileImageModal from '../components/modals/ProfileImageModal';
 import { getUsers, updateUser, deleteUser, createUser, addCustomerNotification, subscribeToCustomers } from '../services/data';
 import { formatDistanceToNow, format } from 'date-fns';
 
@@ -79,6 +80,7 @@ const UsersPage = () => {
   const [showNotifyModal, setShowNotifyModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+  const [profileImageModal, setProfileImageModal] = useState({ open: false, user: null });
 
   // Fetch users data
   useEffect(() => {
@@ -101,7 +103,7 @@ const UsersPage = () => {
         user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.phone?.includes(searchTerm) ||
-        user.cnic?.includes(searchTerm)
+        user.username?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -193,6 +195,16 @@ const UsersPage = () => {
     setShowDeleteConfirm(true);
   };
 
+  // Open profile image modal
+  const openProfileImageModal = (user) => {
+    setProfileImageModal({ open: true, user });
+  };
+
+  // Close profile image modal
+  const closeProfileImageModal = () => {
+    setProfileImageModal({ open: false, user: null });
+  };
+
   // Get status count
   const getStatusCount = (status) => {
     return users.filter(user => user.status === status).length;
@@ -276,7 +288,7 @@ const UsersPage = () => {
         <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4">
           <div className="flex-1">
             <Input
-              placeholder="Search by name, email, phone, or CNIC..."
+              placeholder="Search by name, email, phone, or username..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               icon={['fas', 'search']}
@@ -310,13 +322,10 @@ const UsersPage = () => {
                   Customer
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Customer ID
+                  User Name
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Contact
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  CNIC
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Join Date
@@ -335,11 +344,32 @@ const UsersPage = () => {
                   <tr key={user.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <img
-                          src={user.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=2563eb&color=ffffff`}
-                          alt=""
-                          className="h-10 w-10 rounded-full"
-                        />
+                        <div className="relative">
+                          {(user.profileImage || user.profilePicture || user.avatar || user.photoURL) ? (
+                            <img
+                              src={user.profileImage || user.profilePicture || user.avatar || user.photoURL}
+                              alt=""
+                              className="h-10 w-10 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
+                              onClick={() => openProfileImageModal(user)}
+                              onError={(e) => {
+                                console.log('Image failed to load:', e.target.src);
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'flex';
+                              }}
+                            />
+                          ) : null}
+                          <div 
+                            className={`h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-blue-600 transition-all ${(user.profileImage || user.profilePicture || user.avatar || user.photoURL) ? 'hidden' : ''}`}
+                            onClick={() => openProfileImageModal(user)}
+                          >
+                            <span className="text-white text-sm font-medium">
+                              {user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 
+                               user.email ? user.email.charAt(0).toUpperCase() : 'U'}
+                            </span>
+                          </div>
+                          <div className="absolute inset-0 rounded-full bg-black bg-opacity-0 hover:bg-opacity-10 cursor-pointer transition-all"
+                               onClick={() => openProfileImageModal(user)}></div>
+                        </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900">{user.name || 'N/A'}</div>
                           <div className="text-sm text-gray-500">{user.email || 'N/A'}</div>
@@ -348,18 +378,15 @@ const UsersPage = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        {user.customerId || user.id || 'N/A'}
+                        {user.username || user.displayName || user.name || 'N/A'}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {user.customerId ? 'Custom ID' : 'Doc ID'}
+                        {user.email ? user.email.split('@')[0] : 'No username'}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{user.phone || 'N/A'}</div>
                       <div className="text-sm text-gray-500 max-w-xs truncate">{user.address || 'No address'}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {user.cnic || 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {formatSafeDate(user.createdAt)}
@@ -406,7 +433,7 @@ const UsersPage = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
                     <FontAwesomeIcon icon={['fas', 'users']} className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                     <p>No customers found</p>
                   </td>
@@ -442,14 +469,22 @@ const UsersPage = () => {
             <div className="space-y-6">
               {/* Profile Section */}
               <div className="flex items-center space-x-4">
-                <img
-                  src={selectedUser.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedUser.name || 'User')}&background=2563eb&color=ffffff`}
-                  alt=""
-                  className="h-20 w-20 rounded-full"
-                />
+                <div className="relative">
+                  <img
+                    src={selectedUser.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedUser.name || 'User')}&background=2563eb&color=ffffff&size=200`}
+                    alt=""
+                    className="h-20 w-20 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
+                    onClick={() => openProfileImageModal(selectedUser)}
+                  />
+                  <div className="absolute inset-0 rounded-full bg-black bg-opacity-0 hover:bg-opacity-10 cursor-pointer transition-all flex items-center justify-center"
+                       onClick={() => openProfileImageModal(selectedUser)}>
+                    <FontAwesomeIcon icon={['fas', 'expand']} className="text-white opacity-0 hover:opacity-100 transition-opacity" />
+                  </div>
+                </div>
                 <div>
                   <h4 className="text-xl font-semibold text-gray-900">{selectedUser.name}</h4>
                   <p className="text-gray-600">{selectedUser.email}</p>
+                  <p className="text-sm text-blue-600">@{selectedUser.username || selectedUser.name?.toLowerCase().replace(/\s+/g, '') || 'user'}</p>
                   <Badge status={selectedUser.status || 'active'} />
                 </div>
               </div>
@@ -460,7 +495,7 @@ const UsersPage = () => {
                   <h5 className="text-sm font-medium text-gray-500 mb-2">Contact Information</h5>
                   <div className="space-y-2">
                     <p><strong>Phone:</strong> {selectedUser.phone || 'N/A'}</p>
-                    <p><strong>CNIC:</strong> {selectedUser.cnic || 'N/A'}</p>
+                    <p><strong>Username:</strong> @{selectedUser.username || selectedUser.name?.toLowerCase().replace(/\s+/g, '') || 'user'}</p>
                     <p><strong>Address:</strong> {selectedUser.address || 'Not provided'}</p>
                   </div>
                 </div>
@@ -469,7 +504,7 @@ const UsersPage = () => {
                   <h5 className="text-sm font-medium text-gray-500 mb-2">Account Information</h5>
                   <div className="space-y-2">
                     <p><strong>Member Since:</strong> {formatSafeDate(selectedUser.createdAt)}</p>
-                    <p><strong>Customer ID:</strong> {selectedUser.customerId || selectedUser.id || 'N/A'}</p>
+                    <p><strong>User ID:</strong> {selectedUser.id || 'N/A'}</p>
                     <p><strong>Status:</strong> {selectedUser.status || 'active'}</p>
                   </div>
                 </div>
@@ -506,6 +541,13 @@ const UsersPage = () => {
           </div>
         </div>
       )}
+
+      {/* Profile Image Modal */}
+      <ProfileImageModal
+        open={profileImageModal.open}
+        onClose={closeProfileImageModal}
+        user={profileImageModal.user}
+      />
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && userToDelete && (
