@@ -4,10 +4,14 @@ import { useAuth } from '../contexts/FirebaseAuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.jpg';
 
 const LoginPage = () => {
   const { login, currentUser, loading, forgotPassword } = useAuth();
+  
+  // Add debugging
+  console.log('LoginPage render - currentUser:', currentUser, 'loading:', loading);
+  
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -22,7 +26,13 @@ const LoginPage = () => {
 
   // Redirect if already logged in
   if (currentUser && !loading) {
+    console.log('LoginPage: Redirecting to dashboard - currentUser exists and not loading');
     return <Navigate to="/" replace />;
+  }
+  
+  // Also check if user exists but still loading
+  if (currentUser && loading) {
+    console.log('LoginPage: User exists but still loading, staying on login page');
   }
 
   const handleInputChange = (e) => {
@@ -93,10 +103,10 @@ const LoginPage = () => {
           <div className="text-center mb-8">
             <img
               src={logo}
-              alt="Captain Truck"
+              alt="Track Your Truck Load"
               className="mx-auto h-20 w-20 rounded-xl mb-4 bg-blue-500"
             />
-            <h2 className="text-3xl font-bold text-gray-900">Captain Truck</h2>
+            <h2 className="text-3xl font-bold text-gray-900">Track Your Truck Load</h2>
             <p className="mt-2 text-sm text-gray-600">Admin Dashboard</p>
           </div>
 
@@ -121,7 +131,7 @@ const LoginPage = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder="admin@captaintruck.com"
+                placeholder="Enter your email"
                 icon={['fas', 'envelope']}
                 required
                 disabled={formLoading}
@@ -264,7 +274,7 @@ const LoginPage = () => {
           {/* Footer */}
           <div className="mt-6 text-center">
             <p className="text-xs text-gray-500">
-              © 2025 Captain Truck. All rights reserved.
+              © 2025 Track Your Truck Load. All rights reserved.
             </p>
           </div>
         </div>

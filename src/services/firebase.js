@@ -5,16 +5,16 @@ import { getFirestore, enableNetwork, disableNetwork } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage';
 
 // Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+  apiKey: "AIzaSyA1gnEFXkcNab-1skhtfrcjXEILb6OJz9U",
+  authDomain: "trackyourtruckload-20e29.firebaseapp.com",
+  projectId: "trackyourtruckload-20e29",
+  storageBucket: "trackyourtruckload-20e29.firebasestorage.app",
+  messagingSenderId: "693509446728",
+  appId: "1:693509446728:web:3aa08a7649e89704160c7d",
+  measurementId: "G-JBDYFZC29X"
 };
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 

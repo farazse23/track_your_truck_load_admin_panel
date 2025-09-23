@@ -2,7 +2,7 @@
 REM Firebase Cloud Functions Deployment Script for Windows
 REM Run this script to deploy the functions to Firebase
 
-echo 🚀 Deploying Firebase Cloud Functions for Captain Truck...
+echo 🚀 Deploying Firebase Cloud Functions for Track Your Truck Load...
 
 REM Check if Firebase CLI is installed
 firebase --version >nul 2>&1

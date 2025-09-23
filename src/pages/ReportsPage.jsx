@@ -226,7 +226,7 @@ const ReportsPage = () => {
     
     // Create a simple text report
     const reportContent = `
-CAPTAIN TRUCK - BUSINESS REPORT
+TRACK YOUR TRUCK LOAD - BUSINESS REPORT
 Generated: ${format(new Date(), 'MMM dd, yyyy - HH:mm')}
 Period: ${dateRange.replace('-', ' ').toUpperCase()}
 

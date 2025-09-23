@@ -39,7 +39,7 @@ exports.sendDriverPushNotification = functions.firestore
       const message = {
         token: fcmToken,
         notification: {
-          title: notificationData.title || 'Captain Truck',
+          title: notificationData.title || 'Track Your Truck Load',
           body: notificationData.message || 'You have a new notification',
         },
         data: {
@@ -124,7 +124,7 @@ exports.sendCustomerPushNotification = functions.firestore
       const message = {
         token: fcmToken,
         notification: {
-          title: notificationData.title || 'Captain Truck',
+          title: notificationData.title || 'Track Your Truck Load',
           body: notificationData.message || 'You have a new notification',
         },
         data: {

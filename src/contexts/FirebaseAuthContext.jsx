@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
           console.log('Auth state changed for user:', firebaseUser.email, 'UID:', firebaseUser.uid);
           
           // TEMPORARY: If admin email, create mock admin user
-          if (firebaseUser.email === 'admin@captaintruck.com') {
+          if (firebaseUser.email === 'admin@trackyourtruckload.com' || firebaseUser.email === 'admin@captaintruck.com') {
             setCurrentUser({
               uid: firebaseUser.uid,
               email: firebaseUser.email,
@@ -35,6 +35,8 @@ export const AuthProvider = ({ children }) => {
               name: 'System Administrator',
               adminId: firebaseUser.uid
             });
+            setLoading(false);
+            return;
           } else {
             // Check in admins collection first by adminId field
             const adminsQuery = query(collection(db, 'admins'), where('adminId', '==', firebaseUser.uid));
@@ -45,19 +47,27 @@ export const AuthProvider = ({ children }) => {
               const adminData = adminDoc.data();
               console.log('Found admin data:', adminData);
               
-              if (adminData.status !== 'active') {
+              if (adminData.status && adminData.status !== 'active') {
                 setError('Admin account is not active. Please contact system administrator.');
                 await signOut(auth);
+                setLoading(false);
                 return;
               }
               
-              setCurrentUser({
+              const userData = {
                 uid: firebaseUser.uid,
                 email: firebaseUser.email,
                 emailVerified: firebaseUser.emailVerified,
                 role: 'admin',
                 ...adminData
-              });
+              };
+              
+              console.log('Setting currentUser to:', userData);
+              setCurrentUser(userData);
+              setError(null);
+              setLoading(false);
+              console.log('Login flow completed successfully');
+              return;
             } else {
               // Check in customers collection
               const customerDoc = await getDoc(doc(db, 'customers', firebaseUser.uid));
@@ -69,6 +79,8 @@ export const AuthProvider = ({ children }) => {
                   role: 'customer',
                   ...customerDoc.data()
                 });
+                setLoading(false);
+                return;
               } else {
                 // Check in drivers collection by firebaseUid field
                 const driversQuery = query(collection(db, 'drivers'), where('firebaseUid', '==', firebaseUser.uid));
@@ -84,11 +96,15 @@ export const AuthProvider = ({ children }) => {
                     id: driverDoc.id, // Firestore document ID
                     ...driverDoc.data()
                   });
+                  setLoading(false);
+                  return;
                 } else {
                   // User exists in Auth but not in any collection
                   console.error('User exists in Auth but not found in any collection:', firebaseUser.email);
                   setError('User profile not found. Please contact administrator.');
                   await signOut(auth);
+                  setLoading(false);
+                  return;
                 }
               }
             }
@@ -124,14 +140,14 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password, rememberMe = false) => {
     try {
       setError(null);
-      setLoading(true);
       
       console.log('Attempting login with email:', email);
       
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log('Firebase Auth successful, user:', userCredential.user.email, 'UID:', userCredential.user.uid);
       
-      // The onAuthStateChanged listener will handle setting the user
+      // Don't set loading to false here - let onAuthStateChanged handle it
+      // The onAuthStateChanged listener will handle setting the user and loading state
       if (rememberMe) {
         localStorage.setItem('admin_session', 'true');
       }
@@ -163,8 +179,6 @@ export const AuthProvider = ({ children }) => {
       
       setError(errorMessage);
       throw new Error(errorMessage);
-    } finally {
-      setLoading(false);
     }
   };
 

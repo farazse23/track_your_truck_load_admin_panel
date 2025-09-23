@@ -37,7 +37,7 @@ const SettingsPage = () => {
   const [currentAdmin, setCurrentAdmin] = useState(null);
   const [settings, setSettings] = useState({
     general: {
-      companyName: 'Captain Truck',
+  companyName: 'Track Your Truck Load',
       companyEmail: 'admin@captaintruck.com',
       companyPhone: '+1 (555) 123-4567',
       supportEmail: 'support@captaintruck.com',

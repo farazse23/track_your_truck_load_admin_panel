@@ -3,7 +3,7 @@
 # Firebase Cloud Functions Deployment Script
 # Run this script to deploy the functions to Firebase
 
-echo "🚀 Deploying Firebase Cloud Functions for Captain Truck..."
+echo "🚀 Deploying Firebase Cloud Functions for Track Your Truck Load..."
 
 # Check if Firebase CLI is installed
 if ! command -v firebase &> /dev/null

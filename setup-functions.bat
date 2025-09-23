@@ -1,5 +1,5 @@
 @echo off
-echo 🚀 Captain Truck - Cloud Functions Setup
+echo 🚀 Track Your Truck Load - Cloud Functions Setup
 echo =====================================
 echo.
 

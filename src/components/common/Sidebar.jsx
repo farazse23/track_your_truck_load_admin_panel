@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ROUTES } from '../../utils/constants';
 import { subscribeToPendingRequests, subscribeToNotifications } from '../../services/data';
-import logo from '../../assets/logo.png';
+import logo from '../../assets/logo.jpg';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
@@ -124,14 +124,14 @@ const Sidebar = ({ isOpen, onClose }) => {
       >
         <div className="flex flex-col h-full">
           {/* Logo Section */}
-          <div className="flex items-center justify-center h-16 px-4 bg-slate-900">
+          <div className="flex items-center justify-center h-20 px-4 bg-slate-900">
             <img
               src={logo}
-              alt="Captain Truck"
+              alt="Track Your Truck Load"
               className="h-10 w-10 rounded-lg"
             />
             <div className="ml-3">
-              <h1 className="text-lg font-bold text-white">Captain Truck</h1>
+              <h3 className="text-xl font-bold text-white">Track Your <br /> Truck Load</h3>
               <p className="text-xs text-slate-400">Admin Panel</p>
             </div>
           </div>
@@ -174,7 +174,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           {/* Footer */}
           <div className="px-4 py-4 border-t border-slate-700">
             <div className="text-xs text-slate-400 text-center">
-              <p>Captain Truck Admin</p>
+              <p>Track Your Truck Load Admin</p>
               <p>Version 1.0.0</p>
             </div>
           </div>

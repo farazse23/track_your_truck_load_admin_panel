@@ -1,7 +1,7 @@
 {
   "name": "captain-truck-functions",
   "version": "1.0.0",
-  "description": "Firebase Cloud Functions for Captain Truck Admin Dashboard",
+  "description": "Firebase Cloud Functions for Track Your Truck Load Admin Dashboard",
   "main": "index.js",
   "scripts": {
     "serve": "firebase emulators:start --only functions",
@@ -11,7 +11,7 @@
     "logs": "firebase functions:log"
   },
   "engines": {
-    "node": "18"
+    "node": "20"
   },
   "dependencies": {
     "firebase-admin": "^12.7.0",

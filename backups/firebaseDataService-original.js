@@ -1541,7 +1541,7 @@ export const getSettings = async () => {
       return docSnap.data();
     }
     return {
-      companyName: 'Captain Truck',
+  companyName: 'Track Your Truck Load',
       email: 'admin@captaintruck.com',
       phone: '+1-555-0100',
       address: '123 Business St, City, State'

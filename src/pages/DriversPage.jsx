@@ -1106,16 +1106,16 @@ const DriversPage = () => {
                   <div className="text-sm text-blue-800">
                     <p><strong>Email Template for Driver:</strong></p>
                     <div className="mt-2 p-3 bg-white border rounded text-gray-700 font-mono text-xs">
-                      <p><strong>Subject:</strong> Your Captain Truck Driver Account - Login Credentials</p>
+                      <p><strong>Subject:</strong> Your Track Your Truck Load Driver Account - Login Credentials</p>
                       <div className="mt-2">
                         <p>Dear Driver,</p>
-                        <p className="mt-2">Welcome to Captain Truck! Your driver account has been created.</p>
+                        <p className="mt-2">Welcome to Track Your Truck Load! Your driver account has been created.</p>
                         <p className="mt-2"><strong>Login Details:</strong></p>
                         <p>Driver ID: {newDriverId}</p>
                         <p>Email: {newDriverEmail}</p>
                         <p>Temporary Password: {generatedPassword}</p>
                         <p className="mt-2"><strong>Important:</strong> Please change your password immediately after your first login for security.</p>
-                        <p className="mt-2">Best regards,<br/>Captain Truck Admin Team</p>
+                        <p className="mt-2">Best regards,<br/>Track Your Truck Load Admin Team</p>
                       </div>
                     </div>
                   </div>
@@ -1125,11 +1125,11 @@ const DriversPage = () => {
               <div className="flex flex-col sm:flex-row justify-center space-y-2 sm:space-y-0 sm:space-x-3">
                 <button
                   onClick={() => {
-                    const emailTemplate = `Subject: Your Captain Truck Driver Account - Login Credentials
+                    const emailTemplate = `Subject: Your Track Your Truck Load Driver Account - Login Credentials
 
 Dear Driver,
 
-Welcome to Captain Truck! Your driver account has been created.
+Welcome to Track Your Truck Load! Your driver account has been created.
 
 Login Details:
 Email: ${newDriverEmail}
@@ -1138,7 +1138,7 @@ Temporary Password: ${generatedPassword}
 Important: Please change your password immediately after your first login for security.
 
 Best regards,
-Captain Truck Admin Team`;
+Track Your Truck Load Admin Team`;
                     copyToClipboard(emailTemplate);
                     alert('Email template copied to clipboard!');
                   }}

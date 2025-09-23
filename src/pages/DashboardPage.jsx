@@ -96,7 +96,7 @@ const DashboardPage = () => {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="mt-2 text-gray-600">Welcome to Captain Truck Admin Dashboard</p>
+  <p className="mt-2 text-gray-600">Welcome to Track Your Truck Load Admin Dashboard</p>
       </div>
 
       {/* Stats Cards */}

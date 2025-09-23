@@ -1,6 +1,6 @@
-# Captain Truck Admin Dashboard - Mock Version
+# Track Your Truck Load Admin Dashboard - Mock Version
 
-This is the Captain Truck Admin Dashboard with all Firebase dependencies removed and replaced with mock data for development and testing purposes.
+This is the Track Your Truck Load Admin Dashboard with all Firebase dependencies removed and replaced with mock data for development and testing purposes.
 
 ## 🚀 Getting Started
 

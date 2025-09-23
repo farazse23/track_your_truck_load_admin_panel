@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../ui/Button';
 import ChangePasswordModal from '../modals/ChangePasswordModal';
 import { subscribeToNotifications, getAdminByUID } from '../../services/data';
-import logo from '../../assets/logo.png';
+import logo from '../../assets/logo.jpg';
 
 const Header = ({ onMenuToggle }) => {
   const navigate = useNavigate();
@@ -81,11 +81,11 @@ const Header = ({ onMenuToggle }) => {
           <div className="flex items-center space-x-3">
             <img
               src={logo}
-              alt="Captain Truck"
+              alt="Track Your Truck Load"
               className="h-10 w-10 rounded-lg bg-blue-500"
             />
             <div className="hidden sm:block">
-              <h1 className="text-xl font-bold text-gray-900">Captain Truck</h1>
+              <h1 className="text-xl font-bold text-gray-900">Track Your Truck Load</h1>
               <p className="text-xs text-gray-500">Admin Dashboard</p>
             </div>
           </div>

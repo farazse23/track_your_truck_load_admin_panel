@@ -35,14 +35,14 @@ const TrucksPage = () => {
   });
 
   const truckTypes = [
-    { value: 'flatbed', label: 'Flatbed' },
-    { value: 'container', label: 'Container' },
-    { value: 'refrigerated', label: 'Refrigerated' },
-    { value: 'tanker', label: 'Tanker' },
+    { value: 'turnpike-double', label: 'Turnpike Double / B-Train' },
+    { value: 'container-hauling', label: 'Container Hauling' },
+    { value: 'tractor-service', label: 'Tractor Service (Power-Only)' },
+    { value: 'temperature-controlled', label: 'Temperature-Controlled' },
+    { value: 'step-deck', label: 'Step Deck & Flatdeck' },
     { value: 'dry-van', label: 'Dry Van' },
-    { value: 'lowboy', label: 'Lowboy' },
-    { value: 'dump-truck', label: 'Dump Truck' },
-    { value: 'car-carrier', label: 'Car Carrier' }
+    { value: 'cross-dock', label: 'Cross Dock' },
+    { value: 'expedited-hotshot', label: 'Expedited & Hot Shot / 5-Ton' }
   ];
 
   const statusOptions = [
